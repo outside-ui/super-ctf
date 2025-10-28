@@ -1,90 +1,86 @@
 import tkinter as tk
 from typing import List
 import random
-from .config import CanvasSettings, ConfettiSettings
+from . import CanvasSettings
+
+POSSIBLE_COLORS: List[str] = [
+                                "red",
+                                "yellow",
+                                "blue",
+                                "green",
+                                "purple",
+                                "orange",
+                                "pink",
+                                "white",
+                                "cyan",
+                            ]
+BURST_SPEED: int = 8
+GRAVITY = 0.38
+CONFFETI_COUNT: int = 250
 
 
 class ConfettiDot:
-    def __init__(self, canvas: tk.Tk, x: int, y: int):
-        self.__canvas = canvas
-        self.__x = x
-        self.__y = y
-        self.__size = random.randint(4, 10)
-        self.__color = random.choice(ConfettiSettings.COLORS.value)
-        self.__vx = random.uniform(
-            -ConfettiSettings.BURST_SPEED.value, ConfettiSettings.BURST_SPEED.value
-        )
-        self.__vy = random.uniform(
-            -ConfettiSettings.BURST_SPEED.value, ConfettiSettings.BURST_SPEED.value
-        )
-        self.__shape = canvas.create_oval(
-            x, y, x + self.__size, y + self.__size, fill=self.__color, outline=""
-        )
+    def __init__(self, canvas: tk.Canvas, cx: float, cy: float):
+        self.canvas = canvas
+        self.color: str = random.choice(POSSIBLE_COLORS)
+        self.x = cx + random.randint(-20, 20)
+        self.y: int = cy + random.randint(-20, 20)
+        self.size: int = random.randint(4, 10)
+        self.vx: int = random.uniform(-BURST_SPEED, BURST_SPEED)
+        self.vy: int = random.uniform(-BURST_SPEED, BURST_SPEED)
+        self.id: int = canvas.create_oval(self.x, self.y, self.x+self.size, self.y+self.size, fill=self.color, outline="")
 
     def update(self):
-        # Apply motion and gravity
-        self.__vy += ConfettiSettings.GRAVITY.value
-        self.__vx *= ConfettiSettings.FRICTION.value
-        self.__vy *= ConfettiSettings.FRICTION.value
-
-        self.__x += self.__vx
-        self.__y += self.__vy
-
-        # Reset if it falls off screen
-        if self.__y > CanvasSettings.HEIGHT.value:
-            self.__y = random.randint(-50, 0)
-            self.__vy = random.uniform(-5, -1)
-            self.__vx = random.uniform(-2, 2)
-
-        self.__canvas.move(self.__shape, self.__vx, self.__vy)
+        self.canvas.move(self.id, self.vx, self.vy)
+        self.vy += GRAVITY
 
 
-class ConfettiOverlay:
-    def __init__(self, parent_root: tk.Tk):
-        self.__overlay = tk.Toplevel(parent_root)
-        self.__overlay.overrideredirect(True)
-        self.__overlay.attributes("-topmost", True)
-        self.__overlay.attributes("-transparentcolor", "grey")
-        geometry = f"{CanvasSettings.WIDTH.value}x{CanvasSettings.HEIGHT.value}+{parent_root.winfo_rootx()}+{parent_root.winfo_rooty()}"
-        self.__overlay.geometry(geometry)
+class ConffetiAnimation:
+    def __init__(self, 
+                parent_app: tk.Tk, 
+                width: int = CanvasSettings.WIDTH, 
+                height: int = CanvasSettings.HEIGHT, 
+                conffeti_count: int = CONFFETI_COUNT
+                ):
+        self.parent_app: tk.Tk= parent_app
+        
+        self.width = width
+        self.height = height 
+        self.canvas = tk.Canvas(parent_app, width=width, height=height, bg=CanvasSettings.BG_COLOR, highlightthickness=0)
+        self.canvas.pack(fill="both", expand=True)
+        tk.Widget.lift(self.canvas)
 
-        self.__canvas = tk.Canvas(self.__overlay, bg="grey", highlightthickness=0)
-        self.__canvas.pack(fill="both", expand=True)
+        self.conffeti_count: int = conffeti_count
+        self.conffeti: List[ConfettiDot] = []
 
-        self.__confetties = []
+        self.running = False
+    
+    def _get_center(self):
+        self.canvas.update_idletasks()
+        w = self.canvas.winfo_width() or self.width
+        h = self.canvas.winfo_height() or self.height
+        return w / 2, h / 2
+    
+    def create(self):
+        cx, cy = self._get_center()
+        self.conffeti = [ConfettiDot(self.canvas, cx, cy) for _ in range(self.conffeti_count)]
+
+    def animate(self, frames: int = 350):
+        frames = 350 # run that many frames (~20ms per frame)
+
+        if not self.running:
+            return
+
+        for dot in self.conffeti:
+            dot.update()
+
+        if frames > 0:
+            self.parent_app.after(20, lambda: self.animate(frames - 1))
+        else:
+            self.running = False
+
+    def start(self):
+        self.canvas.update_idletasks()
+        self.create()
+        self.running = True
         self.animate()
-
-        self.__parent_root = parent_root
-        self.__parent_root.bind("<Configure>", self.__sync_position)
-
-    def __sync_position(self, event=None):
-        try:
-            x = event.widget.winfo_rootx()
-            y = event.widget.winfo_rooty()
-            w = event.widget.winfo_width()
-            h = event.widget.winfo_height()
-            if w > 1 and h > 1:
-                self.__overlay.geometry(f"{w}x{h}+{x}+{y}")
-        except tk.TclError:
-            pass
-
-    def burst_confetti(self):
-        self.__confetties = ConfettiOverlay.__create_confetti(self.__canvas)
-
-    @staticmethod
-    def __create_confetti(canvas):
-        confetties: List[ConfettiDot] = []
-        for _ in range(ConfettiSettings.CONFETTI_COUNT.value):
-            confetties.append(
-                ConfettiDot(
-                    canvas,
-                    CanvasSettings.WIDTH.value / 2,
-                    CanvasSettings.HEIGHT.value / 2,
-                )
-            )
-        return confetties
-
-    def animate(self):
-        for c in self.__confetties:
-            c.update()
-        self.__overlay.after(20, self.animate)
