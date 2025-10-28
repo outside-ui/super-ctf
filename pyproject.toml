@@ -3,13 +3,9 @@ name = "super-ctf"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "am", email = "am@example.com" }
-]
+authors = [{ name = "am", email = "am@example.com" }]
 requires-python = ">=3.13"
-dependencies = [
-    "pywin32>=311",
-]
+dependencies = ["pywin32==311", "types-pywin32>=311.0.0.20251008"]
 
 [project.scripts]
 super-ctf = "super_ctf:main"
@@ -17,3 +13,7 @@ super-ctf = "super_ctf:main"
 [build-system]
 requires = ["uv_build>=0.8.13,<0.9.0"]
 build-backend = "uv_build"
+
+[tool.ruff]
+lint.select = ["ALL"]
+lint.ignore = ["D", "ERA001", "N802", "T201", "PTH", "D213", "D203", "COM812"]
