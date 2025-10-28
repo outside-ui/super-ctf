@@ -1,8 +1,8 @@
 import tkinter as tk
 from typing import List
 import random
-import math
-from config import CanvasSettings, ConfettiSettings
+from .config import CanvasSettings, ConfettiSettings
+
 
 class ConfettiDot:
     def __init__(self, canvas: tk.Tk, x: int, y: int):
@@ -11,8 +11,12 @@ class ConfettiDot:
         self.__y = y
         self.__size = random.randint(4, 10)
         self.__color = random.choice(ConfettiSettings.COLORS.value)
-        self.__vx = random.uniform(-ConfettiSettings.BURST_SPEED.value, ConfettiSettings.BURST_SPEED.value)
-        self.__vy = random.uniform(-ConfettiSettings.BURST_SPEED.value, ConfettiSettings.BURST_SPEED.value)
+        self.__vx = random.uniform(
+            -ConfettiSettings.BURST_SPEED.value, ConfettiSettings.BURST_SPEED.value
+        )
+        self.__vy = random.uniform(
+            -ConfettiSettings.BURST_SPEED.value, ConfettiSettings.BURST_SPEED.value
+        )
         self.__shape = canvas.create_oval(
             x, y, x + self.__size, y + self.__size, fill=self.__color, outline=""
         )
@@ -34,6 +38,7 @@ class ConfettiDot:
 
         self.__canvas.move(self.__shape, self.__vx, self.__vy)
 
+
 class ConfettiOverlay:
     def __init__(self, parent_root: tk.Tk):
         self.__overlay = tk.Toplevel(parent_root)
@@ -42,13 +47,13 @@ class ConfettiOverlay:
         self.__overlay.attributes("-transparentcolor", "grey")
         geometry = f"{CanvasSettings.WIDTH.value}x{CanvasSettings.HEIGHT.value}+{parent_root.winfo_rootx()}+{parent_root.winfo_rooty()}"
         self.__overlay.geometry(geometry)
-        
+
         self.__canvas = tk.Canvas(self.__overlay, bg="grey", highlightthickness=0)
         self.__canvas.pack(fill="both", expand=True)
 
-        self.__confetties = [] 
+        self.__confetties = []
         self.animate()
-        
+
         self.__parent_root = parent_root
         self.__parent_root.bind("<Configure>", self.__sync_position)
 
@@ -70,7 +75,13 @@ class ConfettiOverlay:
     def __create_confetti(canvas):
         confetties: List[ConfettiDot] = []
         for _ in range(ConfettiSettings.CONFETTI_COUNT.value):
-            confetties.append(ConfettiDot(canvas, CanvasSettings.WIDTH.value / 2, CanvasSettings.HEIGHT.value / 2))
+            confetties.append(
+                ConfettiDot(
+                    canvas,
+                    CanvasSettings.WIDTH.value / 2,
+                    CanvasSettings.HEIGHT.value / 2,
+                )
+            )
         return confetties
 
     def animate(self):

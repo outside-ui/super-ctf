@@ -1,14 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Tuple
-from config import CanvasSettings
-from confetti import ConfettiOverlay
+from .config import CanvasSettings
+from .confetti import ConfettiOverlay
+
 
 class Countdown:
     def __init__(self, time: int):
         self.__time: int = time
         self.__remaining_time: int = time
-        self.__is_running: bool = False 
+        self.__is_running: bool = False
         self.__root, self.__timer_label = Countdown.__initialize_GUI()
         self.__confetti: ConfettiOverlay = ConfettiOverlay(self.__root)
 
@@ -21,19 +22,16 @@ class Countdown:
         root.configure(bg="#000000")
 
         # Timer Label
-        timer_label = tk.Label(root,
-                            text="05:00",
-                            font=("Digital-7", 80),
-                            fg="#07f017",
-                            bg="#000000")
-        
+        timer_label = tk.Label(
+            root, text="05:00", font=("Digital-7", 80), fg="#07f017", bg="#000000"
+        )
+
         timer_label.pack(pady=30)
 
         return root, timer_label
 
     def __countdown(self):
-        """
-        """
+        """ """
         if self.__remaining_time > 0:
             self.__remaining_time -= 1
             self.__update_display(self.__remaining_time)
@@ -42,7 +40,6 @@ class Countdown:
             self.__update_display(0)
             self.__timer_label.config(foreground="#ff5e5e")
             self.__confetti.burst_confetti()
-            
 
     def __update_display(self, current_time: int):
         """Updates the time display label."""
@@ -54,5 +51,3 @@ class Countdown:
         self.__update_display(self.__remaining_time)
         self.__root.after(1000, self.__countdown)
         self.__root.mainloop()
-
-Countdown(5).start()
