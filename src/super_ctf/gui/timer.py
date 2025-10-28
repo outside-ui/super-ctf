@@ -1,20 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Tuple
-# import time
+from config import CanvasSettings
+from confetti import ConfettiOverlay
 
 class Countdown:
     def __init__(self, time: int):
         self.__time: int = time
         self.__remaining_time: int = time
-        self.__is_running: bool = False
+        self.__is_running: bool = False 
         self.__root, self.__timer_label = Countdown.__initialize_GUI()
+        self.__confetti: ConfettiOverlay = ConfettiOverlay(self.__root)
 
     @staticmethod
     def __initialize_GUI() -> Tuple:
         root = tk.Tk()
         root.title("The hardest CTF EVERRRER")
-        root.geometry("400x200")
+        root.geometry(f"{CanvasSettings.WIDTH.value}x{CanvasSettings.HEIGHT.value}")
         root.resizable(False, False)
         root.configure(bg="#000000")
 
@@ -39,6 +41,8 @@ class Countdown:
         else:
             self.__update_display(0)
             self.__timer_label.config(foreground="#ff5e5e")
+            self.__confetti.burst_confetti()
+            
 
     def __update_display(self, current_time: int):
         """Updates the time display label."""
@@ -50,5 +54,5 @@ class Countdown:
         self.__update_display(self.__remaining_time)
         self.__root.after(1000, self.__countdown)
         self.__root.mainloop()
-    
-Countdown(5 * 60).start()
+
+Countdown(5).start()
