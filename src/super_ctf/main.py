@@ -1,3 +1,3 @@
-from super_ctf.gui.timer import Countdown
+from super_ctf.gui.time import Countdown
 
 Countdown(5).start()
