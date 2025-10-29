@@ -1,5 +1,3 @@
-import tkinter as tk
-from typing import List
 import random
 from . import CanvasSettings
 

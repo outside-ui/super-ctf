@@ -1,2 +1,5 @@
+from loguru import logger
+
+
 def main() -> None:
-    print("Hello from super-ctf!")
+    logger.info("Hello from super-ctf!")
