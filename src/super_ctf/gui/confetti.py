@@ -1,6 +1,6 @@
-import tkinter as tk
-from typing import List
 import random
+import tkinter as tk
+
 from .config import CanvasSettings, ConfettiSettings
 
 
@@ -73,7 +73,7 @@ class ConfettiOverlay:
 
     @staticmethod
     def __create_confetti(canvas):
-        confetties: List[ConfettiDot] = []
+        confetties: list[ConfettiDot] = []
         for _ in range(ConfettiSettings.CONFETTI_COUNT.value):
             confetties.append(
                 ConfettiDot(

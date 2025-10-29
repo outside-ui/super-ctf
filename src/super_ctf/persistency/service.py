@@ -3,6 +3,7 @@ import socket
 import sys
 from dataclasses import dataclass
 
+from loguru import logger
 import pywintypes
 import servicemanager
 import win32api
@@ -78,9 +79,25 @@ class TestService(win32serviceutil.ServiceFramework):
             #     startType=win32service.SERVICE_AUTO_START,
             # )
             win32serviceutil.HandleCommandLine(TestService, argv=["NONE", "install"])
-            print(f"✅ Service '{cls._svc_name_}' installed successfully.")
+            logger.debug(f"✅ Service '{cls._svc_name_}' installed successfully.")
         except pywintypes.error as e:
-            print(f"❌ Failed to install service '{cls._svc_name_}': {e}")
+            logger.debug(f"❌ Failed to install service '{cls._svc_name_}': {e}")
+
+    @classmethod
+    def remove_service(cls, exe_path: str | None = None) -> None:
+        """
+        Install (register) the Windows service programmatically.
+        If exe_path is not given, it uses the current script.
+        """
+
+        if exe_path is None:
+            exe_path = sys.executable + f' "{os.path.abspath(sys.argv[0])}"'
+
+        try:
+            win32serviceutil.HandleCommandLine(TestService, argv=["NONE", "remove"])
+            logger.debug(f"✅ Service '{cls._svc_name_}' removed successfully.")
+        except pywintypes.error as e:
+            logger.debug(f"❌ Failed to remove service '{cls._svc_name_}': {e}")
 
     @classmethod
     def run_service(cls) -> None:
@@ -89,9 +106,20 @@ class TestService(win32serviceutil.ServiceFramework):
         """
         try:
             win32serviceutil.StartService(cls._svc_name_)
-            print(f"🚀 Service '{cls._svc_name_}' started successfully.")
+            logger.debug(f"🚀 Service '{cls._svc_name_}' started successfully.")
         except pywintypes.error as e:
-            print(f"❌ Failed to start service '{cls._svc_name_}': {e}")
+            logger.debug(f"❌ Failed to start service '{cls._svc_name_}': {e}")
+
+    @classmethod
+    def stop_service(cls) -> None:
+        """
+        Stop the service programmatically (without command-line use).
+        """
+        try:
+            win32serviceutil.StopService(cls._svc_name_)
+            logger.debug(f"🚀 Service '{cls._svc_name_}' Stopped successfully.")
+        except pywintypes.error as e:
+            logger.debug(f"❌ Failed to stop service '{cls._svc_name_}': {e}")
 
     @classmethod
     def get_service_info(cls) -> ServiceInfo:
@@ -120,9 +148,9 @@ class TestService(win32serviceutil.ServiceFramework):
             win32service.CloseServiceHandle(service)
             win32service.CloseServiceHandle(scm)
 
-            print(f"✅ Service '{service_name}' exists.")
-            print(f"   → State: {STATES.get(state, 'unknown')} ({state})")
-            print(
+            logger.debug(f"✅ Service '{service_name}' exists.")
+            logger.debug(f"   → State: {STATES.get(state, 'unknown')} ({state})")
+            logger.debug(
                 f"   → Enabled: {is_enabled} ({START_TYPES.get(start_type, 'unknown')})"
             )
 
@@ -135,7 +163,7 @@ class TestService(win32serviceutil.ServiceFramework):
             )
 
         except pywintypes.error as e:
-            print(
+            logger.debug(
                 f"❌ Service '{service_name}' does not exist or could not be queried: {e}"
             )
             return ServiceInfo(

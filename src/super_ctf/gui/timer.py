@@ -1,8 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
-from typing import Tuple
-from .config import CanvasSettings
+
 from .confetti import ConfettiOverlay
+from .config import CanvasSettings
 
 
 class Countdown:
@@ -14,7 +13,7 @@ class Countdown:
         self.__confetti: ConfettiOverlay = ConfettiOverlay(self.__root)
 
     @staticmethod
-    def __initialize_GUI() -> Tuple:
+    def __initialize_GUI() -> tuple:
         root = tk.Tk()
         root.title("The hardest CTF EVERRRER")
         root.geometry(f"{CanvasSettings.WIDTH.value}x{CanvasSettings.HEIGHT.value}")
