@@ -1,4 +1,6 @@
+from typing import List
 import random
+import tkinter as tk
 from . import CanvasSettings
 
 POSSIBLE_COLORS: List[str] = [
@@ -12,7 +14,7 @@ POSSIBLE_COLORS: List[str] = [
                                 "white",
                                 "cyan",
                             ]
-BURST_SPEED: int = 8
+BURST_SPEED: int = 9
 GRAVITY = 0.38
 CONFFETI_COUNT: int = 250
 

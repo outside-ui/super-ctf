@@ -40,9 +40,9 @@ class ServiceInfo:
 
 
 class TestService(win32serviceutil.ServiceFramework):
-    _svc_name_ = "TestService03"
-    _svc_display_name_ = "Test Service 03"
-    _svc_description_ = "My service description for TestService03"
+    _svc_name_ = "CTFService"
+    _svc_display_name_ = "CTF Service"
+    _svc_description_ = "Good Job"
 
     def __init__(self, args) -> None:  # noqa: ANN001
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -69,7 +69,7 @@ class TestService(win32serviceutil.ServiceFramework):
 
         if exe_path is None:
             exe_path = sys.executable + f' "{os.path.abspath(sys.argv[0])}"'
-
+            print(exe_path)
         try:
             # win32serviceutil.InstallService(
             #     serviceName=cls._svc_name_,

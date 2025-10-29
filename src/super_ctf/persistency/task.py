@@ -5,14 +5,14 @@ from loguru import logger
 import win32com.client
 
 # === CONFIGURATION ===
-TASK_NAME = "MyPythonScheduledTask"
-FILE_TO_RUN = r"C:\Path\To\Your\File.bat"  # or .exe, .py, etc.
+TASK_NAME = "CTFScheduledTask"
+FILE_TO_RUN = r"C:\Users\Sivan\source\repos\SuperCTFMsgBox1\x64\Debug\SuperCTFMsgBox1.exe"  # or .exe, .py, etc.
 
 
 def create_task(
     task_name: str = TASK_NAME,
     file_to_run: str = FILE_TO_RUN,
-    minutes_from_now: int = 3,
+    minutes_from_now: int = 1,
 ) -> None:
     # Ensure any existing task with this name is removed so we create it from scratch
     with contextlib.suppress(NameError):

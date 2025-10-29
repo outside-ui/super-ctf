@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 from . import CanvasSettings
 from .confetti import ConffetiAnimation
@@ -13,6 +14,7 @@ class Countdown:
         self.window.resizable(False, False)
         self.window.configure(bg=CanvasSettings.BG_COLOR)
         self.window.attributes("-topmost", True)
+        # self.window.protocol("WM_DELETE_WINDOW", lambda : None)
 
         self.timer_label = tk.Label(
             self.window, text="", font=("Digital-7", 80), fg="#07f017", bg=CanvasSettings.BG_COLOR
@@ -20,32 +22,28 @@ class Countdown:
         self.timer_label.pack(pady=30)
 
         self.missions_label = tk.Label(
-            self.window, text="0/2", font=("Arial", 13, "bold"), fg="white", bg=CanvasSettings.BG_COLOR
+            self.window, text="", font=("Arial", 13, "bold"), fg="white", bg=CanvasSettings.BG_COLOR
         )
         self.missions_label.place(x=12, y=12)
+        self.missions_compelete = 0
 
         self.conffeti = ConffetiAnimation(self.window)
 
-    def _update_display(self, current_time: int):
+    def _update_display(self, current_time: int, missions_complete: int):
         mins, secs = divmod(current_time, 60)
         time_str = f"{mins:02d}:{secs:02d}"
         self.timer_label.config(text=time_str)
+        self.missions_label.config(text=f"{missions_complete}/2")
     
     def _count(self):
         if self.remaining_time > 0:
             self.remaining_time -= 1
-            self._update_display(self.remaining_time)
+            self._update_display(self.remaining_time, self.missions_compelete)
             self.window.after(1000, self._count)
         else:
-            self._update_display(0)
+            self._update_display(0, self.missions_compelete)
             self.timer_label.config(foreground="#ff5e5e")
-            
-            # TODO: change to where needed
-            tk.Widget.lift(self.conffeti.canvas)
-            self.conffeti.start()
-            self.timer_label.destroy()
 
     def start(self):
-        self._update_display(self.remaining_time)
+        self._update_display(self.remaining_time, self.missions_compelete)
         self.window.after(1000, self._count)
-        self.window.mainloop()
