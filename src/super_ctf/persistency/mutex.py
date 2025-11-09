@@ -16,7 +16,7 @@ class MutexByName:
     def create(self) -> bool:
         """Return True if created, else the Mutex already exists."""
         # Try to create a named mutex
-        self.h_mutex = win32event.CreateMutex(None, False, self.name)  # pyright: ignore[reportArgumentType]  # noqa: FBT003
+        self.h_mutex = win32event.CreateMutex(None, False, self.name)  # pyright: ignore[reportArgumentType]
         logger.debug(f"{self.h_mutex=}")
         # Check if it already exists
         self.last_error = win32api.GetLastError()
@@ -28,7 +28,7 @@ class MutexByName:
         return True
 
     def is_up(self) -> bool:
-        self.h_mutex = win32event.CreateMutex(None, False, self.name)  # pyright: ignore[reportArgumentType]  # noqa: FBT003
+        self.h_mutex = win32event.CreateMutex(None, False, self.name)  # pyright: ignore[reportArgumentType]
         last_error = win32api.GetLastError()
         return last_error == winerror.ERROR_ALREADY_EXISTS
 

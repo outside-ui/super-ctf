@@ -174,6 +174,45 @@ class TestService(win32serviceutil.ServiceFramework):
                 start_type_text="None",
             )
 
+    @classmethod
+    def set_start_manual(cls) -> None:
+        """Set the service start type to 'manual' (SERVICE_DEMAND_START).
+
+        This updates the service configuration so it does not start
+        automatically on boot.
+        """
+        service_name = cls._svc_name_
+        try:
+            scm = win32service.OpenSCManager(
+                None, None, win32service.SC_MANAGER_ALL_ACCESS
+            )
+            service = win32service.OpenService(
+                scm,
+                service_name,
+                win32service.SERVICE_CHANGE_CONFIG,
+            )
+
+            # Keep other parameters unchanged; only change the start type.
+            win32service.ChangeServiceConfig(
+                service,
+                win32service.SERVICE_NO_CHANGE,
+                win32service.SERVICE_DEMAND_START,
+                win32service.SERVICE_NO_CHANGE,
+                None,
+                None,
+                0,  # pyright: ignore[reportArgumentType]
+                None,
+                None,
+                None,
+                None,
+            )
+
+            win32service.CloseServiceHandle(service)
+            win32service.CloseServiceHandle(scm)
+            logger.debug(f"ℹ️ Service '{service_name}' start type set to 'manual'.")
+        except pywintypes.error as e:
+            logger.debug(f"❌ Failed to set start type for '{service_name}': {e}")
+
 
 def show_popup(message: str, title: str = "Notification") -> None:
     # hwnd = 0 (no parent window)

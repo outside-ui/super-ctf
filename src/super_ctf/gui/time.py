@@ -2,6 +2,7 @@ import tkinter as tk
 
 from . import CanvasSettings
 from .confetti import ConffetiAnimation
+from .explosion import ExplosionOverlay
 
 
 class Countdown:
@@ -49,8 +50,16 @@ class Countdown:
             self._update_display(self.remaining_time, self.missions_compelete)
             self.window.after(1000, self._count)
         else:
+            # User has failed to complete in time!
             self._update_display(0, self.missions_compelete)
             self.timer_label.config(foreground="#ff5e5e")
+            # Show dramatic explosion overlay to indicate failure
+            try:
+                # schedule on mainloop to avoid re-entrancy issues
+                self.window.after(0, lambda: ExplosionOverlay(self.window).trigger())
+            except Exception:
+                # best-effort; don't crash the UI if overlay can't be created
+                pass
 
     def start(self):
         self._update_display(self.remaining_time, self.missions_compelete)

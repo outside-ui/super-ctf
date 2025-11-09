@@ -18,7 +18,6 @@ BURST_SPEED: int = 9
 GRAVITY = 0.38
 CONFFETI_COUNT: int = 250
 
-# ruff: noqa: S311
 
 
 class ConfettiDot:
