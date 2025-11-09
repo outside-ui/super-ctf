@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from loguru import logger
 import win32api
 import win32event
 import winerror
+from loguru import logger
 
 MUTEX_NAME = "Global\\MyUniqueAppMutex"
 

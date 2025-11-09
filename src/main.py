@@ -1,16 +1,21 @@
-import os, sys, threading, pythoncom
+import os
+import sys
+import threading
 from time import sleep
+
+import pythoncom
 from loguru import logger
+
 from super_ctf.gui.time import Countdown
 from super_ctf.persistency.mutex import MutexByName
 from super_ctf.persistency.service import TestService
-from super_ctf.persistency.task import TASK_NAME, create_task, delete_task
+from super_ctf.persistency.task import TASK_NAME, create_task
 from super_ctf.watcher import Status, check_watch
-
 
 DONE = 2
 
-def prepare_resources():
+
+def prepare_resources() -> None:
     try:
         create_task(TASK_NAME)
     except Exception as e:
@@ -19,17 +24,22 @@ def prepare_resources():
     try:
         # calling install_service won't do anything harmful in non-admin
         # contexts; we call get_service_info() to ensure service object exists
+        TestService.remove_service()
         TestService.install_service()
         TestService.run_service()
     except Exception:
-        logger.debug("Could not (re)install service; continuing for test")
+        logger.exception("Could not (re)install service")
 
 
 def check_status(status: Status):
     print(status)
     completed_missions = 0
-    if not status.service_exists or not status.service_running or not status.service_enabled:
-    # if not status.service_exists or not status.service_enabled:
+    if (
+        not status.service_exists
+        or not status.service_running
+        or not status.service_enabled
+    ):
+        # if not status.service_exists or not status.service_enabled:
         completed_missions += 1
     if not status.task_enabled:
         completed_missions += 1
@@ -37,12 +47,10 @@ def check_status(status: Status):
 
 
 def update_display(app: Countdown):
-    print("here")
     pythoncom.CoInitialize()
     for status in check_watch(task_name=TASK_NAME):
-        print("hereeeeee")
         sleep(3)
-        result = check_status(status) 
+        result = check_status(status)
         if result == DONE:
             app.timer_label.destroy()
             app.conffeti.start()
@@ -50,7 +58,7 @@ def update_display(app: Countdown):
         else:
             app.missions_compelete = result
     pythoncom.CoUninitialize()
-            
+
 
 def is_admin() -> bool:
     """Return True if the current process has administrative/root privileges.
@@ -71,7 +79,6 @@ def is_admin() -> bool:
 
 
 if __name__ == "__main__":
-    
     mutex = MutexByName()
     mutex.create()
     logger.info(MutexByName)
@@ -81,10 +88,10 @@ if __name__ == "__main__":
             "Warning: This script is not running with administrative privileges. EXITING."
         )
         sys.exit(1)
-    
+
     prepare_resources()
-    
-    countdown = Countdown(3 *60)
+
+    countdown = Countdown(3 * 60)
     threading.Thread(target=update_display, args=(countdown,), daemon=True).start()
     countdown.start()
     countdown.window.mainloop()

@@ -1,8 +1,8 @@
 import contextlib
 import datetime
 
-from loguru import logger
 import win32com.client
+from loguru import logger
 
 # === CONFIGURATION ===
 TASK_NAME = "CTFScheduledTask"
@@ -12,7 +12,7 @@ FILE_TO_RUN = r"C:\Users\Sivan\source\repos\SuperCTFMsgBox1\x64\Debug\SuperCTFMs
 def create_task(
     task_name: str = TASK_NAME,
     file_to_run: str = FILE_TO_RUN,
-    minutes_from_now: int = 1,
+    minutes_from_now: int = 3,
 ) -> None:
     # Ensure any existing task with this name is removed so we create it from scratch
     with contextlib.suppress(NameError):

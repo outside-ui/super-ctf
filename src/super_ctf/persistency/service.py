@@ -3,7 +3,6 @@ import socket
 import sys
 from dataclasses import dataclass
 
-from loguru import logger
 import pywintypes
 import servicemanager
 import win32api
@@ -11,6 +10,7 @@ import win32con
 import win32event
 import win32service
 import win32serviceutil
+from loguru import logger
 
 # Map numeric state to readable text
 STATES: dict[int, str] = {
