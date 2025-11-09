@@ -130,6 +130,7 @@ def clean() -> None:
         logger.info("Requested service removal")
         info = TestService.get_service_info()
         logger.warning(info)
+        TestService.stop_service()
         TestService.remove_service()
         info = TestService.get_service_info()
         logger.warning(info)
